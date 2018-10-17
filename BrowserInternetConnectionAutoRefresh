@@ -131,10 +131,11 @@ namespace Iot_pro_FinalTest
         {
             webView.Visibility = Visibility.Visible;
             webView.Navigate(new Uri("http://mohamadnazzal.me/project"));
+            CheckInternetConnection.Visibility = Visibility.Collapsed;
         }
         public void InternetConnectionWarning()
         {
-            CheckInternetConnection.Text = "No Internet Connection test";
+            CheckInternetConnection.Text = "No Internet Connection"; 
         }
         //Open WebPage and Warning Function Ends.
     }
