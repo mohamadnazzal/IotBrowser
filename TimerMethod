@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
+using System.Net;
+using System.Net.Sockets;
+using Windows.Networking.Connectivity;
+using System.Text;
+using System.Diagnostics;
+
+
+
+namespace IoT_Project
+{
+    public sealed partial class MainPage : Page
+    {
+        /// <Timer>
+        private DispatcherTimer timer;
+        private int counter = 0;
+        /// </Timer>
+        public MainPage()
+        {
+            this.InitializeComponent();
+           
+            /// Timer
+            timer = new DispatcherTimer();
+            Loaded += MainPage_Loaded;
+        }
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            timer.Interval = TimeSpan.FromSeconds(1.0);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+       
+        private void Timer_Tick(object sender, object e)
+        {
+
+            if (counter == 3)
+            {
+                ViewWebPage();
+                CheckInternetConnection.Visibility = Visibility.Collapsed;
+                //do operation in every 10 seconds
+                counter = 0;
+                //Timer stopping use timer.Start()
+            }
+            else 
+            {
+                messageDialogWarning();
+                counter++;
+            }
+        }
+        public void ViewWebPage()
+        {
+            webView.Visibility = Visibility.Visible;
+            webView.Navigate(new Uri("http://mohamadnazzal.me/project"));
+        }
+        public  void messageDialogWarning()
+        {
+            //async for await
+            CheckInternetConnection.Text = "No Internet Connection";
+            //var messageDialog = new MessageDialog("No Internet Conncetion.");
+            //await messageDialog.ShowAsync();
+            
+        }
+    }
+}
