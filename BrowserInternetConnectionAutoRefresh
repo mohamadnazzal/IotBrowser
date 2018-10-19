@@ -138,6 +138,8 @@ namespace Iot_pro_FinalTest
             CheckInternetConnection.Text = "No Internet Connection"; 
         }
         //Open WebPage and Warning Function Ends.
+        //////  ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+
     }
 }
 
