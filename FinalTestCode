@@ -1,0 +1,174 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+using Windows.Networking.Connectivity;
+using System.Text;
+using System.Runtime;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using Windows.UI.Popups;
+using System.Net.NetworkInformation;
+
+
+// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+
+namespace CCS_Project
+{
+    public sealed partial class MainPage : Page
+    {
+        // DispatcherTimer Class
+        public DispatcherTimer timer;
+        public int counter = 0;
+
+        public MainPage()
+        {
+            this.InitializeComponent();
+            // Load Timer Mission :
+            timer = new DispatcherTimer();
+            Loaded += MainPage_Loaded;
+        }
+        //Function for loading the page by Timer: 
+        //Main Class:
+        public void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (NetworkAvailabilty.Instance.IsNetworkAvailable)
+            {
+                ViewWebPage();
+            }
+            else
+            {
+                InternetConnectionWarning();
+                timer.Interval = TimeSpan.FromSeconds(1.0);
+                timer.Tick += Timer_Tick;
+                timer.Start();
+            }
+        }
+        //  If statement Function.
+        public void Timer_Tick(object sender, object e)
+        {
+            if (counter == 3) // Number of Seconds
+            {
+                MainFunction();
+                counter = 0;                
+            }
+            else
+            {
+                counter++;
+               // timer.Start();
+            }
+        }
+
+        // Internet Connection Checker Functions : 
+        // Main Class : 
+
+        public class NetworkAvailabilty
+        {
+
+            private static NetworkAvailabilty _networkAvailabilty;
+            public static NetworkAvailabilty Instance
+            {
+                get { return _networkAvailabilty ?? (_networkAvailabilty = new NetworkAvailabilty()); }
+                set { _networkAvailabilty = value; }
+            }
+            private bool _isNetworkAvailable;
+            public event Action<bool> OnNetworkAvailabilityChange = delegate { };
+            public bool IsNetworkAvailable
+            {
+                get
+                {
+                    return _isNetworkAvailable;
+                }
+                protected set
+                {
+                    if (_isNetworkAvailable == value) return;
+                    _isNetworkAvailable = value;
+                    OnNetworkAvailabilityChange(value);
+                }
+            }
+            private void CheckInternetAccess()
+            {
+                var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                IsNetworkAvailable = (connectionProfile != null &&
+                                     connectionProfile.GetNetworkConnectivityLevel() ==
+                                     NetworkConnectivityLevel.InternetAccess);
+                Debug.WriteLine("has network changed: " + IsNetworkAvailable);
+            }
+            private void NetworkInformationOnNetworkStatusChanged(object sender)
+            {
+                CheckInternetAccess();
+                Debug.WriteLine("network status changed");
+            }
+            private NetworkAvailabilty()
+            {
+                NetworkInformation.NetworkStatusChanged += NetworkInformationOnNetworkStatusChanged;
+                CheckInternetAccess();
+            }
+        }
+
+        //Main Function : 
+
+        public void MainFunction()
+        {
+            if (NetworkAvailabilty.Instance.IsNetworkAvailable)
+            {
+                ViewWebPage();
+
+            }
+            else
+            {
+                InternetConnectionWarning();
+            }
+        }
+
+        // Internet Connection Function Ends 
+
+        //Open WebPage and Warning Functions : 
+
+        public void ViewWebPage()
+        {
+            webView.Visibility = Visibility.Visible;
+            webView.Navigate(new Uri("http://mohamadnazzal.me/project/"));
+            CheckInternetConnection.Visibility = Visibility.Collapsed;
+
+        }
+        public void InternetConnectionWarning()
+        {
+            CheckInternetConnection.Text = "No Internet Connection";
+        }
+
+    }
+}
+
+
+
+///// Design  : 
+<Page
+    x:Class="CCS_Project.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CCS_Project"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <WebView x:Name="webView" Grid.Row="1" />
+        <TextBlock Name="CheckInternetConnection" HorizontalAlignment="Left" Margin="154,102,0,-122" Text="Connecting ..." TextWrapping="Wrap" VerticalAlignment="Top"/>
+    </Grid>
+</Page>
+
+//////Mohamad Nazzal
