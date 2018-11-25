@@ -1,0 +1,15 @@
+        public MainPage()
+        {
+            this.InitializeComponent();
+            Refresh();
+        }
+        public void OpenWebPage()
+        {
+            webView.Visibility = Visibility.Visible;
+            webView.Navigate(new Uri("http://mohamadnazzal.me/project"));
+        }
+        public async void Refresh()
+        {
+            await Windows.UI.Xaml.Controls.WebView.ClearTemporaryWebDataAsync();
+            OpenWebPage();
+        }
